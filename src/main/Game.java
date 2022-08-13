@@ -22,7 +22,6 @@ public class Game extends JFrame implements Runnable {
     private TileManager tileManager;
 
     public Game() {
-
         LoadSave.CreateFolder();
 
         createDefaultLevel();

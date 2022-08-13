@@ -274,7 +274,7 @@ public class ActionBar extends Bar {
                 }
             }
 
-            for (MyButton b : towerButtons) {
+            for (MyButton b: towerButtons) {
                 if (b.getBounds().contains(x, y)) {
                     if (!isGoldEnoughForTower(b.getId()))
                         return;
@@ -298,7 +298,7 @@ public class ActionBar extends Bar {
         sellTower.setMouseOver(false);
         upgradeTower.setMouseOver(false);
 
-        for (MyButton b : towerButtons)
+        for (MyButton b: towerButtons)
             b.setMouseOver(false);
 
         if (bMenu.getBounds().contains(x, y))
@@ -317,7 +317,7 @@ public class ActionBar extends Bar {
                 }
             }
 
-            for (MyButton b : towerButtons)
+            for (MyButton b: towerButtons)
                 if (b.getBounds().contains(x, y)) {
                     b.setMouseOver(true);
                     showTowerCost = true;
@@ -343,7 +343,7 @@ public class ActionBar extends Bar {
                 }
             }
 
-            for (MyButton b : towerButtons)
+            for (MyButton b: towerButtons)
                 if (b.getBounds().contains(x, y)) {
                     b.setMousePressed(true);
                     return;
@@ -352,9 +352,13 @@ public class ActionBar extends Bar {
     }
 
     public void mouseReleased(int x, int y) {
+        if (bMenu.isMousePressed() || bPause.isMousePressed() || sellTower.isMousePressed() || upgradeTower.isMousePressed()) {
+            this.mouseClicked(x, y);
+        }
+
         bMenu.resetBooleans();
         bPause.resetBooleans();
-        for (MyButton b : towerButtons)
+        for (MyButton b: towerButtons)
             b.resetBooleans();
         sellTower.resetBooleans();
         upgradeTower.resetBooleans();

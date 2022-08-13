@@ -83,6 +83,9 @@ public class Menu extends GameScene implements SceneMethods {
 
     @Override
     public void mouseReleased(int x, int y) {
+        if (bPlaying.isMousePressed() || bEdit.isMousePressed() || bSettings.isMousePressed() || bQuit.isMousePressed()) {
+            this.mouseClicked(x, y);
+        }
         resetButtons();
     }
 

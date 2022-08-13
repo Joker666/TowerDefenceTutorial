@@ -218,6 +218,11 @@ public class Toolbar extends Bar {
     }
 
     public void mouseReleased(int x, int y) {
+        if (bMenu.isMousePressed() || bSave.isMousePressed() || bGrass.isMousePressed() ||
+                bWater.isMousePressed() || bPathStart.isMousePressed() || bPathEnd.isMousePressed()) {
+            this.mouseClicked(x, y);
+        }
+
         bMenu.resetBooleans();
         bSave.resetBooleans();
         bGrass.resetBooleans();
