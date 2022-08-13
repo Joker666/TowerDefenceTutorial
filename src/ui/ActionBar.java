@@ -125,7 +125,6 @@ public class ActionBar extends Bar {
         if (isTowerCostMoreThanCurrentGold()) {
             g.setColor(Color.RED);
             g.drawString("Can't Afford", 270, 725);
-
         }
     }
 
@@ -143,7 +142,6 @@ public class ActionBar extends Bar {
 
     private void drawGoldAmount(Graphics g) {
         g.drawString("Gold: " + gold + "g", 110, 725);
-
     }
 
     private void drawWaveInfo(Graphics g) {
@@ -167,7 +165,6 @@ public class ActionBar extends Bar {
 
     private void drawWaveTimerInfo(Graphics g) {
         if (playing.getWaveManager().isWaveTimerStarted()) {
-
             float timeLeft = playing.getWaveManager().getTimeLeft();
             String formattedText = formatter.format(timeLeft);
             g.drawString("Time Left: " + formattedText, 425, 750);

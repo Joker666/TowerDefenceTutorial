@@ -226,7 +226,6 @@ public class Toolbar extends Bar {
         bPathEnd.resetBooleans();
         for (MyButton b : map.keySet())
             b.resetBooleans();
-
     }
 
     public BufferedImage getStartPathImg() {
