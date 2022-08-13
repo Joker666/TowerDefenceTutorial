@@ -1,173 +1,157 @@
 package main;
 
-import javax.swing.JFrame;
-
 import helpz.LoadSave;
 import managers.TileManager;
-import scenes.Editing;
-import scenes.GameOver;
-import scenes.Menu;
-import scenes.Playing;
-import scenes.Settings;
+import scenes.*;
+
+import javax.swing.*;
 
 public class Game extends JFrame implements Runnable {
+    private final double FPS_SET = 120.0;
+    private final double UPS_SET = 60.0;
+    private GameScreen gameScreen;
+    private Thread gameThread;
+    // Classes
+    private Render render;
+    private Menu menu;
+    private Playing playing;
+    private Settings settings;
+    private Editing editing;
+    private GameOver gameOver;
 
-	private GameScreen gameScreen;
-	private Thread gameThread;
+    private TileManager tileManager;
 
-	private final double FPS_SET = 120.0;
-	private final double UPS_SET = 60.0;
+    public Game() {
 
-	// Classes
-	private Render render;
-	private Menu menu;
-	private Playing playing;
-	private Settings settings;
-	private Editing editing;
-	private GameOver gameOver;
+        LoadSave.CreateFolder();
 
-	private TileManager tileManager;
+        createDefaultLevel();
+        initClasses();
 
-	public Game() {
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        setResizable(false);
+        setTitle("Your Game");
+        add(gameScreen);
+        pack();
+        setVisible(true);
+    }
 
-		LoadSave.CreateFolder();
+    public static void main(String[] args) {
+        Game game = new Game();
+        game.gameScreen.initInputs();
+        game.start();
+    }
 
-		createDefaultLevel();
-		initClasses();
+    private void createDefaultLevel() {
+        int[] arr = new int[400];
+        for (int i = 0; i < arr.length; i++)
+            arr[i] = 0;
 
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setLocationRelativeTo(null);
-		setResizable(false);
-		setTitle("Your Game");
-		add(gameScreen);
-		pack();
-		setVisible(true);
+        LoadSave.CreateLevel(arr);
+    }
 
-	}
+    private void initClasses() {
+        tileManager = new TileManager();
+        render = new Render(this);
+        gameScreen = new GameScreen(this);
+        menu = new Menu(this);
+        playing = new Playing(this);
+        settings = new Settings(this);
+        editing = new Editing(this);
+        gameOver = new GameOver(this);
+    }
 
-	private void createDefaultLevel() {
-		int[] arr = new int[400];
-		for (int i = 0; i < arr.length; i++)
-			arr[i] = 0;
+    private void start() {
+        gameThread = new Thread(this) {
+        };
 
-		LoadSave.CreateLevel(arr);
+        gameThread.start();
+    }
 
-	}
+    private void updateGame() {
+        switch (GameStates.gameState) {
+            case EDIT:
+                editing.update();
+                break;
+            case MENU:
+                break;
+            case PLAYING:
+                playing.update();
+                break;
+            case SETTINGS:
+                break;
+            default:
+                break;
+        }
+    }
 
-	private void initClasses() {
-		tileManager = new TileManager();
-		render = new Render(this);
-		gameScreen = new GameScreen(this);
-		menu = new Menu(this);
-		playing = new Playing(this);
-		settings = new Settings(this);
-		editing = new Editing(this);
-		gameOver = new GameOver(this);
+    @Override
+    public void run() {
+        double timePerFrame = 1000000000.0 / FPS_SET;
+        double timePerUpdate = 1000000000.0 / UPS_SET;
 
-	}
+        long lastFrame = System.nanoTime();
+        long lastUpdate = System.nanoTime();
+        long lastTimeCheck = System.currentTimeMillis();
 
-	private void start() {
-		gameThread = new Thread(this) {
-		};
+        int frames = 0;
+        int updates = 0;
 
-		gameThread.start();
-	}
+        long now;
 
-	private void updateGame() {
-		switch (GameStates.gameState) {
-		case EDIT:
-			editing.update();
-			break;
-		case MENU:
-			break;
-		case PLAYING:
-			playing.update();
-			break;
-		case SETTINGS:
-			break;
-		default:
-			break;
-		}
-	}
+        while (true) {
+            now = System.nanoTime();
 
-	public static void main(String[] args) {
+            // Render
+            if (now - lastFrame >= timePerFrame) {
+                repaint();
+                lastFrame = now;
+                frames++;
+            }
 
-		Game game = new Game();
-		game.gameScreen.initInputs();
-		game.start();
+            // Update
+            if (now - lastUpdate >= timePerUpdate) {
+                updateGame();
+                lastUpdate = now;
+                updates++;
+            }
 
-	}
-
-	@Override
-	public void run() {
-
-		double timePerFrame = 1000000000.0 / FPS_SET;
-		double timePerUpdate = 1000000000.0 / UPS_SET;
-
-		long lastFrame = System.nanoTime();
-		long lastUpdate = System.nanoTime();
-		long lastTimeCheck = System.currentTimeMillis();
-
-		int frames = 0;
-		int updates = 0;
-
-		long now;
-
-		while (true) {
-			now = System.nanoTime();
-
-			// Render
-			if (now - lastFrame >= timePerFrame) {
-				repaint();
-				lastFrame = now;
-				frames++;
+			if (System.currentTimeMillis() - lastTimeCheck >= 1000) {
+				System.out.println("FPS: " + frames + " | UPS: " + updates);
+				frames = 0;
+				updates = 0;
+				lastTimeCheck = System.currentTimeMillis();
 			}
+        }
+    }
 
-			// Update
-			if (now - lastUpdate >= timePerUpdate) {
-				updateGame();
-				lastUpdate = now;
-				updates++;
-			}
+    // Getters and setters
+    public Render getRender() {
+        return render;
+    }
 
-//			if (System.currentTimeMillis() - lastTimeCheck >= 1000) {
-//				System.out.println("FPS: " + frames + " | UPS: " + updates);
-//				frames = 0;
-//				updates = 0;
-//				lastTimeCheck = System.currentTimeMillis();
-//			}
+    public Menu getMenu() {
+        return menu;
+    }
 
-		}
+    public Playing getPlaying() {
+        return playing;
+    }
 
-	}
+    public Settings getSettings() {
+        return settings;
+    }
 
-	// Getters and setters
-	public Render getRender() {
-		return render;
-	}
+    public Editing getEditor() {
+        return editing;
+    }
 
-	public Menu getMenu() {
-		return menu;
-	}
+    public GameOver getGameOver() {
+        return gameOver;
+    }
 
-	public Playing getPlaying() {
-		return playing;
-	}
-
-	public Settings getSettings() {
-		return settings;
-	}
-
-	public Editing getEditor() {
-		return editing;
-	}
-
-	public GameOver getGameOver() {
-		return gameOver;
-	}
-
-	public TileManager getTileManager() {
-		return tileManager;
-	}
-
+    public TileManager getTileManager() {
+        return tileManager;
+    }
 }

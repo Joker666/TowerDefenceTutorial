@@ -3,66 +3,66 @@ package objects;
 import java.awt.geom.Point2D;
 
 public class Projectile {
+    private Point2D.Float pos;
+    private final int id;
+    private final int projectileType;
+    private int dmg;
+    private float xSpeed, ySpeed, rotation;
+    private boolean active = true;
 
-	private Point2D.Float pos;
-	private int id, projectileType, dmg;
-	private float xSpeed, ySpeed, rotation;
-	private boolean active = true;
+    public Projectile(float x, float y, float xSpeed, float ySpeed, int dmg, float rotation, int id, int projectileType) {
+        pos = new Point2D.Float(x, y);
+        this.xSpeed = xSpeed;
+        this.ySpeed = ySpeed;
+        this.dmg = dmg;
+        this.rotation = rotation;
+        this.id = id;
+        this.projectileType = projectileType;
+    }
 
-	public Projectile(float x, float y, float xSpeed, float ySpeed, int dmg, float rotation, int id, int projectileType) {
-		pos = new Point2D.Float(x, y);
-		this.xSpeed = xSpeed;
-		this.ySpeed = ySpeed;
-		this.dmg = dmg;
-		this.rotation = rotation;
-		this.id = id;
-		this.projectileType = projectileType;
-	}
+    public void reuse(int x, int y, float xSpeed, float ySpeed, int dmg, float rotate) {
+        pos = new Point2D.Float(x, y);
+        this.xSpeed = xSpeed;
+        this.ySpeed = ySpeed;
+        this.dmg = dmg;
+        this.rotation = rotate;
+        active = true;
+    }
 
-	public void reuse(int x, int y, float xSpeed, float ySpeed, int dmg, float rotate) {
-		pos = new Point2D.Float(x, y);
-		this.xSpeed = xSpeed;
-		this.ySpeed = ySpeed;
-		this.dmg = dmg;
-		this.rotation = rotate;
-		active = true;
-	}
+    public void move() {
+        pos.x += xSpeed;
+        pos.y += ySpeed;
+    }
 
-	public void move() {
-		pos.x += xSpeed;
-		pos.y += ySpeed;
-	}
+    public Point2D.Float getPos() {
+        return pos;
+    }
 
-	public Point2D.Float getPos() {
-		return pos;
-	}
+    public void setPos(Point2D.Float pos) {
+        this.pos = pos;
+    }
 
-	public void setPos(Point2D.Float pos) {
-		this.pos = pos;
-	}
+    public int getId() {
+        return id;
+    }
 
-	public int getId() {
-		return id;
-	}
+    public int getProjectileType() {
+        return projectileType;
+    }
 
-	public int getProjectileType() {
-		return projectileType;
-	}
+    public boolean isActive() {
+        return active;
+    }
 
-	public boolean isActive() {
-		return active;
-	}
+    public void setActive(boolean active) {
+        this.active = active;
+    }
 
-	public void setActive(boolean active) {
-		this.active = active;
-	}
+    public int getDmg() {
+        return dmg;
+    }
 
-	public int getDmg() {
-		return dmg;
-	}
-
-	public float getRotation() {
-		return rotation;
-	}
-
+    public float getRotation() {
+        return rotation;
+    }
 }

@@ -1,131 +1,122 @@
 package helpz;
 
+import objects.PathPoint;
 import java.util.ArrayList;
 
-import objects.PathPoint;
 import static helpz.Constants.Direction.*;
-import static helpz.Constants.Tiles.*;
+import static helpz.Constants.Tiles.ROAD_TILE;
 
 public class Utilz {
+    public static int[][] GetRoadDirArr(int[][] lvlTypeArr, PathPoint start, PathPoint end) {
+        int[][] roadDirArr = new int[lvlTypeArr.length][lvlTypeArr[0].length];
 
-	public static int[][] GetRoadDirArr(int[][] lvlTypeArr, PathPoint start, PathPoint end) {
-		int[][] roadDirArr = new int[lvlTypeArr.length][lvlTypeArr[0].length];
+        PathPoint currTile = start;
+        int lastDir = -1;
 
-		PathPoint currTile = start;
-		int lastDir = -1;
+        while (!IsCurrSameAsEnd(currTile, end)) {
+            PathPoint prevTile = currTile;
+            currTile = GetNextRoadTile(prevTile, lastDir, lvlTypeArr);
+            lastDir = GetDirFromPrevToCurr(prevTile, currTile);
+            roadDirArr[prevTile.getyCord()][prevTile.getxCord()] = lastDir;
+        }
+        roadDirArr[end.getyCord()][end.getxCord()] = lastDir;
+        return roadDirArr;
+    }
 
-		while (!IsCurrSameAsEnd(currTile, end)) {
-			PathPoint prevTile = currTile;
-			currTile = GetNextRoadTile(prevTile, lastDir, lvlTypeArr);
-			lastDir = GetDirFromPrevToCurr(prevTile, currTile);
-			roadDirArr[prevTile.getyCord()][prevTile.getxCord()] = lastDir;
-		}
-		roadDirArr[end.getyCord()][end.getxCord()] = lastDir;
-		return roadDirArr;
-	}
+    private static int GetDirFromPrevToCurr(PathPoint prevTile, PathPoint currTile) {
+        // Up or down
+        if (prevTile.getxCord() == currTile.getxCord()) {
+            if (prevTile.getyCord() > currTile.getyCord())
+                return UP;
+            else
+                return DOWN;
+        } else {
+            // Right or left
+            if (prevTile.getxCord() > currTile.getxCord())
+                return LEFT;
+            else
+                return RIGHT;
+        }
 
-	private static int GetDirFromPrevToCurr(PathPoint prevTile, PathPoint currTile) {
-		// Up or down
-		if (prevTile.getxCord() == currTile.getxCord()) {
-			if (prevTile.getyCord() > currTile.getyCord())
-				return UP;
-			else
-				return DOWN;
-		} else {
-			// Right or left
-			if (prevTile.getxCord() > currTile.getxCord())
-				return LEFT;
-			else
-				return RIGHT;
-		}
+    }
 
-	}
+    private static PathPoint GetNextRoadTile(PathPoint prevTile, int lastDir, int[][] lvlTypeArr) {
+        int testDir = lastDir;
+        PathPoint testTile = GetTileInDir(prevTile, testDir, lastDir);
 
-	private static PathPoint GetNextRoadTile(PathPoint prevTile, int lastDir, int[][] lvlTypeArr) {
+        while (!IsTileRoad(testTile, lvlTypeArr)) {
+            testDir++;
+            testDir %= 4;
+            testTile = GetTileInDir(prevTile, testDir, lastDir);
+        }
 
-		int testDir = lastDir;
-		PathPoint testTile = GetTileInDir(prevTile, testDir, lastDir);
+        return testTile;
+    }
 
-		while (!IsTileRoad(testTile, lvlTypeArr)) {
-			testDir++;
-			testDir %= 4;
-			testTile = GetTileInDir(prevTile, testDir, lastDir);
-		}
+    private static boolean IsTileRoad(PathPoint testTile, int[][] lvlTypeArr) {
+        if (testTile != null)
+            if (testTile.getyCord() >= 0)
+                if (testTile.getyCord() < lvlTypeArr.length)
+                    if (testTile.getxCord() >= 0)
+                        if (testTile.getxCord() < lvlTypeArr[0].length)
+                            return lvlTypeArr[testTile.getyCord()][testTile.getxCord()] == ROAD_TILE;
 
-		return testTile;
-	}
+        return false;
+    }
 
-	private static boolean IsTileRoad(PathPoint testTile, int[][] lvlTypeArr) {
-		if (testTile != null)
-			if (testTile.getyCord() >= 0)
-				if (testTile.getyCord() < lvlTypeArr.length)
-					if (testTile.getxCord() >= 0)
-						if (testTile.getxCord() < lvlTypeArr[0].length)
-							if (lvlTypeArr[testTile.getyCord()][testTile.getxCord()] == ROAD_TILE)
-								return true;
+    private static PathPoint GetTileInDir(PathPoint prevTile, int testDir, int lastDir) {
+        switch (testDir) {
+            case LEFT:
+                if (lastDir != RIGHT)
+                    return new PathPoint(prevTile.getxCord() - 1, prevTile.getyCord());
+            case UP:
+                if (lastDir != DOWN)
+                    return new PathPoint(prevTile.getxCord(), prevTile.getyCord() - 1);
+            case RIGHT:
+                if (lastDir != LEFT)
+                    return new PathPoint(prevTile.getxCord() + 1, prevTile.getyCord());
+            case DOWN:
+                if (lastDir != UP)
+                    return new PathPoint(prevTile.getxCord(), prevTile.getyCord() + 1);
+        }
 
-		return false;
-	}
+        return null;
+    }
 
-	private static PathPoint GetTileInDir(PathPoint prevTile, int testDir, int lastDir) {
+    private static boolean IsCurrSameAsEnd(PathPoint currTile, PathPoint end) {
+        if (currTile.getxCord() == end.getxCord())
+            return currTile.getyCord() == end.getyCord();
+        return false;
+    }
 
-		switch (testDir) {
-		case LEFT:
-			if (lastDir != RIGHT)
-				return new PathPoint(prevTile.getxCord() - 1, prevTile.getyCord());
-		case UP:
-			if (lastDir != DOWN)
-				return new PathPoint(prevTile.getxCord(), prevTile.getyCord() - 1);
-		case RIGHT:
-			if (lastDir != LEFT)
-				return new PathPoint(prevTile.getxCord() + 1, prevTile.getyCord());
-		case DOWN:
-			if (lastDir != UP)
-				return new PathPoint(prevTile.getxCord(), prevTile.getyCord() + 1);
-		}
+    public static int[][] ArrayListTo2Dint(ArrayList<Integer> list, int ySize, int xSize) {
+        int[][] newArr = new int[ySize][xSize];
 
-		return null;
-	}
+        for (int j = 0; j < newArr.length; j++)
+            for (int i = 0; i < newArr[j].length; i++) {
+                int index = j * ySize + i;
+                newArr[j][i] = list.get(index);
+            }
 
-	private static boolean IsCurrSameAsEnd(PathPoint currTile, PathPoint end) {
-		if (currTile.getxCord() == end.getxCord())
-			if (currTile.getyCord() == end.getyCord())
-				return true;
-		return false;
-	}
+        return newArr;
+    }
 
-	public static int[][] ArrayListTo2Dint(ArrayList<Integer> list, int ySize, int xSize) {
-		int[][] newArr = new int[ySize][xSize];
+    public static int[] TwoDto1DintArr(int[][] twoArr) {
+        int[] oneArr = new int[twoArr.length * twoArr[0].length];
 
-		for (int j = 0; j < newArr.length; j++)
-			for (int i = 0; i < newArr[j].length; i++) {
-				int index = j * ySize + i;
-				newArr[j][i] = list.get(index);
-			}
+        for (int j = 0; j < twoArr.length; j++)
+            for (int i = 0; i < twoArr[j].length; i++) {
+                int index = j * twoArr.length + i;
+                oneArr[index] = twoArr[j][i];
+            }
 
-		return newArr;
+        return oneArr;
+    }
 
-	}
+    public static int GetHypoDistance(float x1, float y1, float x2, float y2) {
+        float xDiff = Math.abs(x1 - x2);
+        float yDiff = Math.abs(y1 - y2);
 
-	public static int[] TwoDto1DintArr(int[][] twoArr) {
-		int[] oneArr = new int[twoArr.length * twoArr[0].length];
-
-		for (int j = 0; j < twoArr.length; j++)
-			for (int i = 0; i < twoArr[j].length; i++) {
-				int index = j * twoArr.length + i;
-				oneArr[index] = twoArr[j][i];
-			}
-
-		return oneArr;
-	}
-
-	public static int GetHypoDistance(float x1, float y1, float x2, float y2) {
-
-		float xDiff = Math.abs(x1 - x2);
-		float yDiff = Math.abs(y1 - y2);
-
-		return (int) Math.hypot(xDiff, yDiff);
-
-	}
-
+        return (int) Math.hypot(xDiff, yDiff);
+    }
 }
