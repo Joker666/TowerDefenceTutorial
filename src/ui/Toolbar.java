@@ -229,8 +229,12 @@ public class Toolbar extends Bar {
         bWater.resetBooleans();
         bPathStart.resetBooleans();
         bPathEnd.resetBooleans();
-        for (MyButton b : map.keySet())
+        for (MyButton b: map.keySet()) {
+            if (b.isMousePressed()) {
+                this.mouseClicked(x, y);
+            }
             b.resetBooleans();
+        }
     }
 
     public BufferedImage getStartPathImg() {

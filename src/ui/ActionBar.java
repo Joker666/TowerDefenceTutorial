@@ -358,8 +358,12 @@ public class ActionBar extends Bar {
 
         bMenu.resetBooleans();
         bPause.resetBooleans();
-        for (MyButton b: towerButtons)
+        for (MyButton b: towerButtons) {
+            if (b.isMousePressed()) {
+                this.mouseClicked(x, y);
+            }
             b.resetBooleans();
+        }
         sellTower.resetBooleans();
         upgradeTower.resetBooleans();
     }
